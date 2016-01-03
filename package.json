@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/Alexanderbez/witly#readme",
   "dependencies": {
+    "app-root-path": "^1.0.0",
     "body-parser": "^1.14.2",
     "browser-sync": "^2.10.1",
     "bunyan": "^1.5.1",
