@@ -10,8 +10,14 @@ const bodyParser = require('body-parser');
 const morgan     = require('morgan');
 const cors       = require('cors');
 const properties = require('./properties');
+const router     = require('./router');
+const services   = require('./services');
 
 module.exports = (app) => {
+  /* Service and API client initialization */
+
+  services.init();
+
   /* Express configuration */
 
   app.set('port', properties.get('port'));
@@ -39,7 +45,7 @@ module.exports = (app) => {
 
   /* Express routing */
 
-  // TODO
+  router.bootstrap(app);
 
   return app;
 };
