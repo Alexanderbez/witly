@@ -4,5 +4,6 @@
 module.exports = {
   bootstrap: require('./bootstrap'),
   properties: require('./properties'),
-  logger: require('./logger')
+  logger: require('./logger'),
+  router: require('./router')
 };
