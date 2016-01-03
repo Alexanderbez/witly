@@ -1,0 +1,26 @@
+{
+  "name": "witly",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A simple Bitly-esque RESTful web app using Node.js and React!",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alexanderbez/witly.git"
+  },
+  "keywords": [
+    "bitly",
+    "node.js",
+    "react",
+    "restful"
+  ],
+  "author": "Alexander Bezobchuk",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Alexanderbez/witly/issues"
+  },
+  "homepage": "https://github.com/Alexanderbez/witly#readme"
+}
