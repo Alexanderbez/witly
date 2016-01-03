@@ -5,6 +5,7 @@
   "description": "A simple Bitly-esque RESTful web app using Node.js and React!",
   "main": "app.js",
   "scripts": {
+    "start": "supervisor app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,5 +23,16 @@
   "bugs": {
     "url": "https://github.com/Alexanderbez/witly/issues"
   },
-  "homepage": "https://github.com/Alexanderbez/witly#readme"
+  "homepage": "https://github.com/Alexanderbez/witly#readme",
+  "dependencies": {
+    "body-parser": "^1.14.2",
+    "browser-sync": "^2.10.1",
+    "bunyan": "^1.5.1",
+    "cors": "^2.7.1",
+    "express": "^4.13.3",
+    "gulp": "^3.9.0",
+    "lodash": "^3.10.1",
+    "mongoose": "^4.3.4",
+    "morgan": "^1.6.1"
+  }
 }
