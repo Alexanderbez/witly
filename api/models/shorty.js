@@ -6,16 +6,21 @@
  * Shorty schema definition (shortened URL).
  */
 
-const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
+const mongoose   = require('mongoose');
+const Schema     = mongoose.Schema;
+const Permutator = require('../utils').permutator;
 
+// Set Mongoose Promise default implementation
 mongoose.Promise = global.Promise;
+
+const UIDPermutator = new Permutator();
 
 // Define Shorty schema
 const shortySchema = new Schema({
   uid: {
     type: String,
     required: true,
+    default: UIDPermutator.next(),
     index: {
       unique: true,
       expires: 60 * 60 * 24
