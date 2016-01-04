@@ -15,8 +15,8 @@ const _ = require('lodash');
  * will represent the character set to choose from and a value k that will
  * represent the number of characters to pick to form a UID.
  *
- * The are (N + k)! / (N - 1)!k!, where N is the number of possible characters
- * to choose from, possibilites.
+ * Note: k must be <= N, where N is the number of elements to choose from in 
+ * the character set n.
  *
  * @param {Array} n
  * @param {Integer} k
