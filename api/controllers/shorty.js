@@ -31,7 +31,7 @@ router.get('/', (req, res) => {
       res.status(200).json(shorties);
     })
     .catch((err) => {
-      log.error('Failed to retrieve all shorty resources');
+      log.error(`Failed to retrieve all shorty resources: ${err.message}`);
       res.status(400).json({error: err.message});
     });
 });
@@ -42,16 +42,23 @@ router.get('/', (req, res) => {
  */
 router.get('/:id', (req, res) => {
   let shortyID = req.params.id;
-  log.debug(`Attempting to retrieve shorty resource by: ${shortyID}`)
+  log.debug(`Attempting to retrieve shorty resource: ${shortyID}`)
 
   Shorty.findById(shortyID)
     .then((shorty) => {
-      res.status(200).json(shorty);
+      if (shorty) {
+        res.status(200).json(shorty);
+      } else {
+        log.error('Resource not found');
+        res.status(404).json({
+          error: 'Resource not found'
+        });
+      }
     })
     .catch((err) => {
-      log.debug('No shorty resource found');
-      res.status(404).json({
-        error: 'Resource not found'
+      log.error(`Failed to query for shorty resource: ${err.message}`);
+      res.status(400).json({
+        error: err.message
       });
     });
 });
@@ -108,7 +115,6 @@ router.post('/', (req, res) => {
         }
       })
       .then((shorty) => {
-        log.debug('Successfully created shorty resource');
         res.status(200).json(shorty);
       })
       .catch((err) => {
@@ -124,47 +130,29 @@ router.post('/', (req, res) => {
 
 /**
  * @DELETE
- * Delete a shorty resource.
+ * Delete a shorty resource by its MongoDB ID attribute.
  */
-router.delete('/', (req, res) => {
-  let body = req.body;
-  log.debug(`Attempting to delete shorty resource: ${JSON.stringify(body)}`);
+router.delete('/:id', (req, res) => {
+  let shortyID = req.params.id;
+  log.debug(`Attempting to delete shorty resource: ${shortyID}`)
 
-  // Body validations
-  req.checkBody('uid', 'Missing Shorty UID').notEmpty();
-  req.checkBody('url', 'Missing Shorty URL').notEmpty();
-
-  // Sanitization
-  req.sanitizeBody('uid').trim();
-  req.sanitizeBody('url').trim();
-
-  // Check for errors
-  let errors = req.validationErrors(true);
-
-  if (errors) {
-    log.error(`Invalid shorty resource body: ${JSON.stringify(req.body)}`);
-    res.status(400).json(errors);
-  } else {
-    log.debug('Successfully validated shorty resource body');
-
-    Shorty.findOneAndRemove({
-        uid: body.uid,
-        url: body.url
-      })
-      .then((shorty) => {
-        if (shorty) {
-          log.debug('Successfully deleted shorty resource');
-          res.status(200).json(shorty);
-        } else {
-          log.debug('No shorty resource found');
-          res.status(404).json({error: 'Resource not found'});
-        }
-      })
-      .catch((err) => {
-        log.error(`Failed to delete shorty resource: ${err.message}`);
-        res.status(400).json({error: err.message});
+  Shorty.findByIdAndRemove(shortyID)
+    .then((shorty) => {
+      if (shorty) {
+        res.status(200).json(shorty);
+      } else {
+        log.debug('Resource not found');
+        res.status(404).json({
+          error: 'Resource not found'
+        });
+      }
+    })
+    .catch((err) => {
+      log.error(`Failed to query for shorty resource: ${err.message}`);
+      res.status(400).json({
+        error: err.message
       });
-  }
+    });
 
   return;
 });
