@@ -1,4 +1,3 @@
 TODO:
 
-* Sanitization
-* Update patch 
+* Update patch - old resource returned
