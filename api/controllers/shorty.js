@@ -151,9 +151,11 @@ router.patch('/:id', sanitizeResource, (req, res) => {
 
   Shorty.findByIdAndUpdate(shortyID, {
       $set: resource
+    }, {
+      new: true
     })
     .then((shorty) => {
-      if (shortyz) {
+      if (shorty) {
         res.status(200).json(shorty);
       } else {
         log.error('Resource not found');
