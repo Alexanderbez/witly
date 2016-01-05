@@ -7,11 +7,17 @@
  * implemented.
  */
 
-const router = require('express').Router();
-const models = require('../models');
-const config = require('../../config');
-const log    = config.logger.getLogger('Controllers::Shorty');
-const Shorty = models.shorty;
+const router     = require('express').Router();
+const moment     = require('moment');
+const models     = require('../models');
+const config     = require('../../config');
+const utils      = require('../utils');
+const log        = config.logger.getLogger('Controllers::Shorty');
+const Shorty     = models.shorty;
+const Permutator = utils.permutator;
+
+/* Controller objects */
+const permutator = new Permutator();
 
 /**
  * @GET
@@ -78,11 +84,34 @@ router.post('/', (req, res) => {
   } else {
     log.debug('Successfully validated shorty resource body');
 
-    let shorty = new Shorty({
-      url: body.url
-    });
+    Shorty.findOne({
+        url: body.url
+      })
+      .then((shorty) => {
+        if (shorty) {
+          log.warn('Resource already exists');
+          res.status(422).json({
+            error: 'Resource already exists'
+          });
 
-    shorty.save()
+          return;
+        } else {
+          let shorty = new Shorty({
+            url: body.url,
+            uid: permutator.next()
+          });
+
+          return new Promise((resolve, reject) => {
+            shorty.save()
+              .then((shorty) => {
+                resolve(shorty);
+              })
+              .catch((err) => {
+                reject(err);
+              });
+          });
+        }
+      })
       .then((shorty) => {
         log.debug('Successfully created shorty resource');
         res.status(200).json(shorty);
