@@ -8,6 +8,8 @@
  */
 
 const router     = require('express').Router();
+const validator  = require('validator');
+const _          = require('lodash');
 const models     = require('../models');
 const config     = require('../../config');
 const utils      = require('../utils');
@@ -17,6 +19,33 @@ const Permutator = utils.permutator;
 
 /* Controller objects */
 const permutator = new Permutator();
+
+/* Middleware */
+
+/**
+ * Performs a sanitization on a Shorty resource object and strips out any 
+ * necessary fields.
+ *
+ * @return {Object}
+ */
+const sanitizeResource = (req, res, next) => {
+  log.info('Performing sanitization on resource');
+  let resource = req.body;
+
+  // Strip out necessary attributes
+  resource = _.pick(resource, ['url']);
+
+  // Sanitize values
+  _.forEach(resource, (k, v) => {
+    resource[v] = validator.trim(k);
+  });
+
+  log.info(`Sanitized resource: ${JSON.stringify(resource)}`);
+  req.resource = resource;
+  next();
+};
+
+/* Routes*/
 
 /**
  * @GET
@@ -66,12 +95,12 @@ router.get('/:id', (req, res) => {
  * @POST
  * Create a shorty resource.
  */
-router.post('/', (req, res) => {
-  let body = req.body;
-  // log.debug(`Attempting to create shorty resource: ${JSON.stringify(body)}`);
+router.post('/', sanitizeResource, (req, res) => {
+  let resource = req.resource;
+  log.debug(`Attempting to create shorty resource: ${JSON.stringify(resource)}`);
 
   Shorty.findOne({
-      url: body.url
+      url: resource.url
     })
     .then((shorty) => {
       if (shorty) {
@@ -83,7 +112,7 @@ router.post('/', (req, res) => {
         return;
       } else {
         let shorty = new Shorty({
-          url: body.url,
+          url: resource.url,
           uid: permutator.next()
         });
 
@@ -115,16 +144,16 @@ router.post('/', (req, res) => {
  * @PATCH
  * Updates an existing shorty resource.
  */
-router.patch('/:id', (req, res) => {
+router.patch('/:id', sanitizeResource, (req, res) => {
   let shortyID = req.params.id;
-  let body     = req.body;
+  let resource = req.resource;
   log.debug(`Attempting to update shorty resource: ${shortyID}`);
 
   Shorty.findByIdAndUpdate(shortyID, {
-      $set: body
+      $set: resource
     })
     .then((shorty) => {
-      if (shorty) {
+      if (shortyz) {
         res.status(200).json(shorty);
       } else {
         log.error('Resource not found');
