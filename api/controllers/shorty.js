@@ -38,26 +38,21 @@ router.get('/', (req, res) => {
 
 /**
  * @GET
- * Retrieve a shorty resource by its UID attribute.
+ * Retrieve a shorty resource by its MongoDB ID attribute.
  */
-router.get('/:uid', (req, res) => {
-  let shortyUID = req.params.uid;
-  log.debug(`Attempting to retrieve shorty resource by: ${shortyUID}`)
+router.get('/:id', (req, res) => {
+  let shortyID = req.params.id;
+  log.debug(`Attempting to retrieve shorty resource by: ${shortyID}`)
 
-  Shorty.findOne({
-      uid: shortyUID
-    })
+  Shorty.findById(shortyID)
     .then((shorty) => {
-      if (shorty) {
-        res.status(200).json(shorty);
-      } else {
-        log.debug('No shorty resource found');
-        res.status(404).json({error: 'Resource not found'});
-      }
+      res.status(200).json(shorty);
     })
     .catch((err) => {
-      log.error('Failed to retrieve shorty resource');
-      res.status(400).json({error: err.message});
+      log.debug('No shorty resource found');
+      res.status(404).json({
+        error: 'Resource not found'
+      });
     });
 });
 
