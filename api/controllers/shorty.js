@@ -129,6 +129,28 @@ router.post('/', (req, res) => {
 });
 
 /**
+ * @PUT
+ * Updates an existing shorty resource.
+ */
+router.put('/:id', (req, res) => {
+  let shortyID = req.params.id;
+  let body     = req.body;
+  log.debug(`Attempting to update shorty resource: ${shortyID}`);
+
+  Shorty.findByIdAndUpdate(shortyID, {
+    $set: body
+  })
+  .then((shorty) => {
+
+  })
+  .catch((err) => {
+
+  });
+
+  return;
+});
+
+/**
  * @DELETE
  * Delete a shorty resource by its MongoDB ID attribute.
  */
