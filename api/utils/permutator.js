@@ -25,12 +25,16 @@ const _ = require('lodash');
 let Permutator = class Permutator {
   constructor(n, k) {
     // Validate parameters
-    if (n && !(n instanceof Array)) {
-      throw new TypeError('Invalid seed argument. Must be an Array.');
+    if (n !== undefined && !(n instanceof Array)) {
+      throw new TypeError('Invalid arguments');
     }
 
-    if (k && isNaN(parseFloat(k)) && isFinite(k)) {
-      throw new TypeError('Invalid sample size argument. Must be a Number.');
+    if (k !== undefined && (isNaN(parseFloat(k)) || !isFinite(k))) {
+      throw new TypeError('Invalid arguments');
+    }
+
+    if (n !== undefined && k !== undefined && (k % 1 !== 0 || k > n.length)) {
+      throw new TypeError('Invalid arguments');
     }
 
     this.n = n || _.flatten([
