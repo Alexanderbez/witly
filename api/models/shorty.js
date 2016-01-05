@@ -7,6 +7,7 @@
  */
 
 const mongoose = require('mongoose');
+const moment   = require('moment');
 const Schema   = mongoose.Schema;
 
 // Set Mongoose Promise default implementation
@@ -18,8 +19,7 @@ const shortySchema = new Schema({
     type: String,
     required: true,
     index: {
-      unique: true,
-      expires: 60 * 60 * 24
+      unique: true
     }
   },
   url: {
@@ -31,7 +31,14 @@ const shortySchema = new Schema({
       },
       message: 'Invalid URL!'
     },
-    index: true
+    index: {
+      unique: true
+    }
+  },
+  expireAt: {
+    type: Date,
+    default: moment().add(1, 'day'),
+    expires: 0
   }
 }, {
   timestamps: true
