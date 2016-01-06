@@ -7,6 +7,9 @@
  */
 
 const bodyParser = require('body-parser');
+const appRoot    = require('app-root-path');
+const path       = require('path');
+const express    = require('express');
 const morgan     = require('morgan');
 const cors       = require('cors');
 const properties = require('./properties');
@@ -43,9 +46,14 @@ module.exports = (app) => {
     allowedHeaders: ['Content-Type', 'Authorization']
   }));
 
+  /* Swagger setup */
+
+  app.use(express.static(path.join(appRoot.path, 'public', 'swagger')));
+
   /* Express routing */
 
   router.bootstrap(app);
 
   return app;
 };
+
