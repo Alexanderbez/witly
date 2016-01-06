@@ -49,7 +49,7 @@ const sanitizeResource = (req, res, next) => {
 
 /**
  * @GET
- * Find a shorty resource that matches a specified search criteria.
+ * Retrieves a shorty resource that matches a specified search criteria.
  */
 router.get('/find', (req, res) => {
   let query = req.query;
@@ -76,7 +76,7 @@ router.get('/find', (req, res) => {
 
 /**
  * @GET
- * Searches for all shorty resources that match a specified search criteria.
+ * Retrieves for all shorty resources that match a specified search criteria.
  */
 router.get('/search', (req, res) => {
 
@@ -84,7 +84,7 @@ router.get('/search', (req, res) => {
 
 /**
  * @GET
- * Retrieve all shorty resources.
+ * Retrieves all shorty resources.
  */
 router.get('/', (req, res) => {
   log.debug('Attempting to retrieve all shorty resources');
@@ -101,7 +101,7 @@ router.get('/', (req, res) => {
 
 /**
  * @GET
- * Retrieve a shorty resource by its MongoDB ID attribute.
+ * Retrieves a shorty resource by its MongoDB ID attribute.
  */
 router.get('/:id', (req, res) => {
   let shortyID = req.params.id;
@@ -128,7 +128,8 @@ router.get('/:id', (req, res) => {
 
 /**
  * @POST
- * Create a shorty resource.
+ * Creates a shorty resource if one does not already exist. The created shorty
+ * is then returned if successful.
  */
 router.post('/', sanitizeResource, (req, res) => {
   let resource = req.resource;
@@ -177,7 +178,8 @@ router.post('/', sanitizeResource, (req, res) => {
 
 /**
  * @PATCH
- * Updates an existing shorty resource.
+ * Updates an existing shorty resource. The updated resource is then returned
+ * if successful.
  */
 router.patch('/:id', sanitizeResource, (req, res) => {
   let shortyID = req.params.id;
@@ -211,7 +213,8 @@ router.patch('/:id', sanitizeResource, (req, res) => {
 
 /**
  * @DELETE
- * Delete a shorty resource by its MongoDB ID attribute.
+ * Deletes a shorty resource by its MongoDB ID attribute. The deleted resource
+ * is then returned if successful.
  */
 router.delete('/:id', (req, res) => {
   let shortyID = req.params.id;
