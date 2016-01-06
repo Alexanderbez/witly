@@ -49,6 +49,41 @@ const sanitizeResource = (req, res, next) => {
 
 /**
  * @GET
+ * Find a shorty resource that matches a specified search criteria.
+ */
+router.get('/find', (req, res) => {
+  let query = req.query;
+  log.debug(`Attempting to find a shorty resource by: ${JSON.stringify(query)}`);
+
+  Shorty.findOne(query)
+    .then((shorty) => {
+      if (shorty) {
+        res.status(200).json(shorty);
+      } else {
+        log.error('Resource not found');
+        res.status(404).json({
+          error: 'Resource not found'
+        });
+      }
+    })
+    .catch((err) => {
+      log.error(`Failed to query for shorty resource: ${err.message}`);
+      res.status(400).json({
+        error: err.message
+      });
+    });
+});
+
+/**
+ * @GET
+ * Searches for all shorty resources that match a specified search criteria.
+ */
+router.get('/search', (req, res) => {
+
+});
+
+/**
+ * @GET
  * Retrieve all shorty resources.
  */
 router.get('/', (req, res) => {
