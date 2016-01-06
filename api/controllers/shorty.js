@@ -77,9 +77,12 @@ router.get('/find', (req, res) => {
 /**
  * @GET
  * Retrieves for all shorty resources that match a specified search criteria.
+ * The search criteria should crudely be based upon existing shorty resource
+ * attributes.
  */
 router.get('/search', (req, res) => {
-
+  let query = req.query;
+  log.debug(`Attempting to find shorty resources by: ${JSON.stringify(query)}`);
 });
 
 /**
