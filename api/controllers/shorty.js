@@ -186,8 +186,6 @@ router.post('/', sanitizeResource, (req, res) => {
         error: err.message
       });
     });
-
-  return;
 });
 
 /**
@@ -221,8 +219,6 @@ router.patch('/:id', sanitizeResource, (req, res) => {
         error: err.message
       });
     });
-
-  return;
 });
 
 /**
@@ -251,8 +247,6 @@ router.delete('/:id', (req, res) => {
         error: err.message
       });
     });
-
-  return;
 });
 
 module.exports = router;
