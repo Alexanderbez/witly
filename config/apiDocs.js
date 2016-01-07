@@ -41,21 +41,21 @@ module.exports = {
           }
         }],
         "responses": {
-            "200": {
-                "description": "Resource created",
-                "schema": {
-                    "$ref": "#/definitions/Shorty"
-                }
-            },
-            "400": {
-                "description": "Failed to create resource"
-            },
+          "200": {
+            "description": "Resource created",
+            "schema": {
+              "$ref": "#/definitions/Shorty"
+            }
+          },
+          "400": {
+            "description": "Failed to create resource"
+          },
           "422": {
             "description": "Invalid input"
           }
         }
       },
-    "get": {
+      "get": {
         "tags": [
           "shorty"
         ],
@@ -66,18 +66,18 @@ module.exports = {
           "application/json"
         ],
         "responses": {
-            "200": {
-                "description": "Successful operation",
-                "schema": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
               "type": "array",
               "items": {
                 "$ref": "#/definitions/Shorty"
               }
             }
-            },
-            "400": {
-                "description": "Failed to create resource"
-            }
+          },
+          "400": {
+            "description": "Failed to create resource"
+          }
         }
       }
     },
@@ -98,29 +98,25 @@ module.exports = {
           "description": "The shortened UID of the Shorty resource",
           "required": false,
           "type": "string"
-        },
-        {
+        }, {
           "name": "url",
           "in": "query",
           "description": "The URL of the Shorty resource",
           "required": false,
           "type": "string"
-        },
-        {
+        }, {
           "name": "expireAt",
           "in": "query",
           "description": "The expiration timestamp of the Shorty resource",
           "required": false,
           "type": "string"
-        },
-        {
+        }, {
           "name": "createdAt",
           "in": "query",
           "description": "The creation timestamp of the Shorty resource",
           "required": false,
           "type": "string"
-        },
-        {
+        }, {
           "name": "updatedAt",
           "in": "query",
           "description": "The last updated timestamp of the Shorty resource",
@@ -160,29 +156,25 @@ module.exports = {
           "description": "The shortened UID of the Shorty resource",
           "required": false,
           "type": "string"
-        },
-        {
+        }, {
           "name": "url",
           "in": "query",
           "description": "The URL of the Shorty resource",
           "required": false,
           "type": "string"
-        },
-        {
+        }, {
           "name": "expireAt",
           "in": "query",
           "description": "The expiration timestamp of the Shorty resource",
           "required": false,
           "type": "string"
-        },
-        {
+        }, {
           "name": "createdAt",
           "in": "query",
           "description": "The creation timestamp of the Shorty resource",
           "required": false,
           "type": "string"
-        },
-        {
+        }, {
           "name": "updatedAt",
           "in": "query",
           "description": "The last updated timestamp of the Shorty resource",
@@ -258,7 +250,7 @@ module.exports = {
           "format": "int64"
         }],
         "responses": {
-           "200": {
+          "200": {
             "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/Shorty"
@@ -290,19 +282,19 @@ module.exports = {
           "example": "http://www.google.com"
         },
         "uid": {
-            "type": "string"
+          "type": "string"
         },
         "expireAt": {
-            "type": "string",
-            "format": "date-time"
+          "type": "string",
+          "format": "date-time"
         },
-                "createdAt": {
-            "type": "string",
-            "format": "date-time"
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
         },
-                "updatedAt": {
-            "type": "string",
-            "format": "date-time"
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       },
       "xml": {
