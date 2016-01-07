@@ -263,6 +263,47 @@ module.exports = {
             "description": "Failed to query for resource"
           }
         }
+      },
+      "patch": {
+        "tags": [
+          "shorty"
+        ],
+        "summary": "Updates a Shorty",
+        "description": "",
+        "operationId": "updateShorty",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [{
+          "name": "shortyId",
+          "in": "path",
+          "description": "ID of Shorty to update",
+          "required": true,
+          "type": "integer",
+          "format": "int64"
+        }, {
+          "in": "body",
+          "name": "body",
+          "description": "Shorty resource to be updated",
+          "required": true,
+          "schema": {
+            "$ref": "#/definitions/Shorty"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Shorty"
+            }
+          },
+          "404": {
+            "description": "No resource found"
+          },
+          "400": {
+            "description": "Failed to query for resource"
+          }
+        }
       }
     }
   },
