@@ -122,6 +122,20 @@ module.exports = {
           "description": "The last updated timestamp of the Shorty resource",
           "required": false,
           "type": "string"
+        }, {
+          "name": "limit",
+          "in": "query",
+          "description": "The number of resources to return",
+          "required": false,
+          "type": "integer",
+          "default": 100
+        }, {
+          "name": "skip",
+          "in": "query",
+          "description": "The number of resources to paginate by",
+          "required": false,
+          "type": "integer",
+          "default": 0
         }],
         "responses": {
           "200": {
