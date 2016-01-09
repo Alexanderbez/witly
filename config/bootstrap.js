@@ -6,13 +6,15 @@
  * Handles all common Express configuration and setting management.
  */
 
-const bodyParser       = require('body-parser');
-const morgan           = require('morgan');
-const cors             = require('cors');
-const properties       = require('./properties');
-const router           = require('./router');
-const services         = require('./services');
-const expressValidator = require('express-validator');
+const bodyParser = require('body-parser');
+const appRoot    = require('app-root-path');
+const path       = require('path');
+const express    = require('express');
+const morgan     = require('morgan');
+const cors       = require('cors');
+const properties = require('./properties');
+const router     = require('./router');
+const services   = require('./services');
 
 module.exports = (app) => {
   /* Service and API client initialization */
@@ -29,9 +31,6 @@ module.exports = (app) => {
   // Parse application/json
   app.use(bodyParser.json());
 
-  // Express data validation
-  app.use(expressValidator());
-
   // HTTP logger
   app.use(morgan('common', {
     skip: (req, res) => {
@@ -47,9 +46,14 @@ module.exports = (app) => {
     allowedHeaders: ['Content-Type', 'Authorization']
   }));
 
+  /* Swagger setup */
+
+  app.use(express.static(path.join(appRoot.path, 'public', 'swagger')));
+
   /* Express routing */
 
   router.bootstrap(app);
 
   return app;
 };
+

@@ -7,15 +7,109 @@
  * implemented.
  */
 
-const router = require('express').Router();
-const models = require('../models');
-const config = require('../../config');
-const log    = config.logger.getLogger('Controllers::Shorty');
-const Shorty = models.shorty;
+const router     = require('express').Router();
+const validator  = require('validator');
+const _          = require('lodash');
+const models     = require('../models');
+const config     = require('../../config');
+const utils      = require('../utils');
+const log        = config.logger.getLogger('Controllers::Shorty');
+const Shorty     = models.shorty;
+const Permutator = utils.permutator;
+
+/* Controller objects */
+const permutator = new Permutator();
+
+/* Middleware */
+
+/**
+ * Performs a sanitization on a Shorty resource object and strips out any 
+ * necessary fields.
+ *
+ * @return {Object}
+ */
+const sanitizeResource = (req, res, next) => {
+  log.info('Performing sanitization on resource');
+  let resource = req.body;
+
+  // Strip out necessary attributes
+  resource = _.pick(resource, ['url']);
+
+  // Sanitize values
+  _.forEach(resource, (k, v) => {
+    resource[v] = validator.trim(k);
+  });
+
+  log.info(`Sanitized resource: ${JSON.stringify(resource)}`);
+  req.resource = resource;
+  next();
+};
+
+/* Routes*/
 
 /**
  * @GET
- * Retrieve all shorty resources.
+ * Retrieves a shorty resource that matches a specified search criteria.
+ */
+router.get('/find', (req, res) => {
+  let query = req.query;
+  log.debug(`Attempting to find a shorty resource by: ${JSON.stringify(query)}`);
+
+  Shorty.findOne(query)
+    .then((shorty) => {
+      if (shorty) {
+        res.status(200).json(shorty);
+      } else {
+        log.error('Resource not found');
+        res.status(404).json({
+          error: 'Resource not found'
+        });
+      }
+    })
+    .catch((err) => {
+      log.error(`Failed to query for shorty resource: ${err.message}`);
+      res.status(400).json({
+        error: err.message
+      });
+    });
+});
+
+/**
+ * @GET
+ * Retrieves for all shorty resources that match a specified search criteria.
+ * The search criteria should crudely be based upon existing shorty resource
+ * attributes. If no resources are found, an empty collection is returned.
+ * Results are paginated with a default return size of 100.
+ *
+ * Note: There may be some I/O performance hits with the way Mongoose handles
+ * its cursor pagination on 'skip'.
+ */
+router.get('/search', (req, res) => {
+  let query = req.query;
+  let limit = query.limit || 100;
+  let skip  = query.skip || 0;
+  delete query.limit;
+  delete query.skip;
+  log.debug(`Attempting to find shorty resources by: ${JSON.stringify(query)}`);
+
+  Shorty.find(query)
+  .skip(skip)
+  .limit(limit)
+  .sort('createdAt')
+    .then((shorties) => {
+      res.status(200).json(shorties);
+    })
+    .catch((err) => {
+      log.error(`Failed to query for shorty resources: ${err.message}`);
+      res.status(400).json({
+        error: err.message
+      });
+    });
+});
+
+/**
+ * @GET
+ * Retrieves all shorty resources.
  */
 router.get('/', (req, res) => {
   log.debug('Attempting to retrieve all shorty resources');
@@ -25,124 +119,145 @@ router.get('/', (req, res) => {
       res.status(200).json(shorties);
     })
     .catch((err) => {
-      log.error('Failed to retrieve all shorty resources');
+      log.error(`Failed to retrieve all shorty resources: ${err.message}`);
       res.status(400).json({error: err.message});
     });
 });
 
 /**
  * @GET
- * Retrieve a shorty resource by its UID attribute.
+ * Retrieves a shorty resource by its MongoDB ID attribute.
  */
-router.get('/:uid', (req, res) => {
-  let shortyUID = req.params.uid;
-  log.debug(`Attempting to retrieve shorty resource by: ${shortyUID}`)
+router.get('/:id', (req, res) => {
+  let shortyID = req.params.id;
+  log.debug(`Attempting to retrieve shorty resource: ${shortyID}`)
 
-  Shorty.findOne({
-      uid: shortyUID
-    })
+  Shorty.findById(shortyID)
     .then((shorty) => {
       if (shorty) {
         res.status(200).json(shorty);
       } else {
-        log.debug('No shorty resource found');
-        res.status(404).json({error: 'Resource not found'});
+        log.error('Resource not found');
+        res.status(404).json({
+          error: 'Resource not found'
+        });
       }
     })
     .catch((err) => {
-      log.error('Failed to retrieve shorty resource');
-      res.status(400).json({error: err.message});
+      log.error(`Failed to query for shorty resource: ${err.message}`);
+      res.status(400).json({
+        error: err.message
+      });
     });
 });
 
 /**
  * @POST
- * Create a shorty resource.
+ * Creates a shorty resource if one does not already exist. The created shorty
+ * is then returned if successful.
  */
-router.post('/', (req, res) => {
-  let body = req.body;
-  log.debug(`Attempting to create shorty resource: ${JSON.stringify(body)}`);
+router.post('/', sanitizeResource, (req, res) => {
+  let resource = req.resource;
+  log.debug(`Attempting to create shorty resource: ${JSON.stringify(resource)}`);
 
-  // Body validations
-  req.checkBody('url', 'Missing Shorty URL').notEmpty();
-
-  // Sanitization
-  req.sanitizeBody('url').trim();
-
-  // Check for errors
-  let errors = req.validationErrors(true);
-
-  if (errors) {
-    log.error(`Invalid shorty resource body: ${JSON.stringify(req.body)}`);
-    res.status(400).json(errors);
-  } else {
-    log.debug('Successfully validated shorty resource body');
-
-    let shorty = new Shorty({
-      url: body.url
-    });
-
-    shorty.save()
-      .then((shorty) => {
-        log.debug('Successfully created shorty resource');
-        res.status(200).json(shorty);
-      })
-      .catch((err) => {
-        log.error(`Failed to create shorty resource: ${err.message}`);
-        res.status(400).json({
-          error: err.message
+  Shorty.findOne({
+      url: resource.url
+    })
+    .then((shorty) => {
+      if (shorty) {
+        log.warn('Resource already exists');
+        res.status(422).json({
+          error: 'Resource already exists'
         });
-      });
-  }
 
-  return;
+        return;
+      } else {
+        let shorty = new Shorty({
+          url: resource.url,
+          uid: permutator.next()
+        });
+
+        return new Promise((resolve, reject) => {
+          shorty.save()
+            .then((shorty) => {
+              resolve(shorty);
+            })
+            .catch((err) => {
+              reject(err);
+            });
+        });
+      }
+    })
+    .then((shorty) => {
+      res.status(200).json(shorty);
+    })
+    .catch((err) => {
+      log.error(`Failed to create shorty resource: ${err.message}`);
+      res.status(400).json({
+        error: err.message
+      });
+    });
+});
+
+/**
+ * @PATCH
+ * Updates an existing shorty resource. The updated resource is then returned
+ * if successful.
+ */
+router.patch('/:id', sanitizeResource, (req, res) => {
+  let shortyID = req.params.id;
+  let resource = req.resource;
+  log.debug(`Attempting to update shorty resource: ${shortyID}`);
+
+  Shorty.findByIdAndUpdate(shortyID, {
+      $set: resource
+    }, {
+      new: true
+    })
+    .then((shorty) => {
+      if (shorty) {
+        res.status(200).json(shorty);
+      } else {
+        log.error('Resource not found');
+        res.status(404).json({
+          error: 'Resource not found'
+        });
+      }
+    })
+    .catch((err) => {
+      log.error(`Failed to query for shorty resource: ${err.message}`);
+      res.status(400).json({
+        error: err.message
+      });
+    });
 });
 
 /**
  * @DELETE
- * Delete a shorty resource.
+ * Deletes a shorty resource by its MongoDB ID attribute. The deleted resource
+ * is then returned if successful.
  */
-router.delete('/', (req, res) => {
-  let body = req.body;
-  log.debug(`Attempting to delete shorty resource: ${JSON.stringify(body)}`);
+router.delete('/:id', (req, res) => {
+  let shortyID = req.params.id;
+  log.debug(`Attempting to delete shorty resource: ${shortyID}`)
 
-  // Body validations
-  req.checkBody('uid', 'Missing Shorty UID').notEmpty();
-  req.checkBody('url', 'Missing Shorty URL').notEmpty();
-
-  // Sanitization
-  req.sanitizeBody('uid').trim();
-  req.sanitizeBody('url').trim();
-
-  // Check for errors
-  let errors = req.validationErrors(true);
-
-  if (errors) {
-    log.error(`Invalid shorty resource body: ${JSON.stringify(req.body)}`);
-    res.status(400).json(errors);
-  } else {
-    log.debug('Successfully validated shorty resource body');
-
-    Shorty.findOneAndRemove({
-        uid: body.uid,
-        url: body.url
-      })
-      .then((shorty) => {
-        if (shorty) {
-          log.debug('Successfully deleted shorty resource');
-          res.status(200).json(shorty);
-        } else {
-          log.debug('No shorty resource found');
-          res.status(404).json({error: 'Resource not found'});
-        }
-      })
-      .catch((err) => {
-        log.error(`Failed to delete shorty resource: ${err.message}`);
-        res.status(400).json({error: err.message});
+  Shorty.findByIdAndRemove(shortyID)
+    .then((shorty) => {
+      if (shorty) {
+        res.status(200).json(shorty);
+      } else {
+        log.debug('Resource not found');
+        res.status(404).json({
+          error: 'Resource not found'
+        });
+      }
+    })
+    .catch((err) => {
+      log.error(`Failed to query for shorty resource: ${err.message}`);
+      res.status(400).json({
+        error: err.message
       });
-  }
-
-  return;
+    });
 });
 
 module.exports = router;
