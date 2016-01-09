@@ -16,7 +16,7 @@ $ npm install
 $ mongod
 ```
 
-3.) Must be running on version >= 4.2.2<br>
+3.) Node must be running on version >= 4.2.2<br>
 
 ## API
 
