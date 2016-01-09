@@ -2,7 +2,7 @@
   "name": "witly",
   "version": "0.0.1",
   "private": true,
-  "description": "A simple Bitly-esque RESTful web app using Node.js and React!",
+  "description": "A simple Bitly-esque RESTful API using Node.js",
   "main": "app.js",
   "scripts": {
     "start": "exit 1",
