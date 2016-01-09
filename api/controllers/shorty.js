@@ -79,12 +79,23 @@ router.get('/find', (req, res) => {
  * Retrieves for all shorty resources that match a specified search criteria.
  * The search criteria should crudely be based upon existing shorty resource
  * attributes. If no resources are found, an empty collection is returned.
+ * Results are paginated with a default return size of 100.
+ *
+ * Note: There may be some I/O performance hits with the way Mongoose handles
+ * its cursor pagination on 'skip'.
  */
 router.get('/search', (req, res) => {
   let query = req.query;
+  let limit = query.limit || 100;
+  let skip  = query.skip || 0;
+  delete query.limit;
+  delete query.skip;
   log.debug(`Attempting to find shorty resources by: ${JSON.stringify(query)}`);
 
   Shorty.find(query)
+  .skip(skip)
+  .limit(limit)
+  .sort('createdAt')
     .then((shorties) => {
       res.status(200).json(shorties);
     })
