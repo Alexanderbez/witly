@@ -39,6 +39,10 @@ const shortySchema = new Schema({
     type: Date,
     default: moment().add(1, 'day'),
     expires: 0
+  },
+  hits: {
+    type: Number,
+    default: 0
   }
 }, {
   timestamps: true
