@@ -22,7 +22,7 @@ module.exports = {
         "tags": [
           "shorty"
         ],
-        "summary": "Create a new shorty resource",
+        "summary": "Create a new Shorty",
         "description": "",
         "operationId": "createShorty",
         "consumes": [
@@ -59,7 +59,7 @@ module.exports = {
         "tags": [
           "shorty"
         ],
-        "summary": "Retrieve all Shorty resources",
+        "summary": "Retrieve all Shorties",
         "description": "",
         "operationId": "getAllShorties",
         "produces": [
@@ -76,7 +76,7 @@ module.exports = {
             }
           },
           "400": {
-            "description": "Failed to create resource"
+            "description": "Failed to query for resources"
           }
         }
       }
@@ -86,7 +86,7 @@ module.exports = {
         "tags": [
           "shorty"
         ],
-        "summary": "Finds Shorties by search criteria",
+        "summary": "Find Shorties by search criteria",
         "description": "",
         "operationId": "searchShorties",
         "produces": [
@@ -134,7 +134,7 @@ module.exports = {
             }
           },
           "400": {
-            "description": "Failed to query for responses"
+            "description": "Failed to query for resources"
           }
         }
       }
@@ -202,7 +202,7 @@ module.exports = {
         "tags": [
           "shorty"
         ],
-        "summary": "Find Shorty by ID",
+        "summary": "Find a Shorty by ID",
         "description": "Returns a single Shorty",
         "operationId": "getShortyById",
         "produces": [
@@ -235,7 +235,7 @@ module.exports = {
         "tags": [
           "shorty"
         ],
-        "summary": "Deletes a Shorty",
+        "summary": "Delete a Shorty",
         "description": "",
         "operationId": "deleteShorty",
         "produces": [
@@ -268,7 +268,7 @@ module.exports = {
         "tags": [
           "shorty"
         ],
-        "summary": "Updates a Shorty",
+        "summary": "Update a Shorty",
         "description": "",
         "operationId": "updateShorty",
         "produces": [
@@ -324,6 +324,10 @@ module.exports = {
         },
         "uid": {
           "type": "string"
+        },
+        "hits": {
+          "type": "integer",
+          "format": "int32"
         },
         "expireAt": {
           "type": "string",
